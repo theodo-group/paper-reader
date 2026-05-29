@@ -10,6 +10,11 @@
 const onLocalServer =
   location.hostname === "localhost" || location.hostname === "127.0.0.1";
 
+// Our own Cloudflare Worker proxy (see worker/proxy.js + wrangler.toml). Once
+// deployed, set this to its URL — it becomes the reliable primary on the static
+// site. Leave empty to rely only on direct fetch + the public proxies.
+const WORKER_PROXY = ""; // e.g. "https://paper-reader-proxy.<subdomain>.workers.dev"
+
 type ProxyBuilder = (url: string) => string;
 
 const STRATEGIES: ProxyBuilder[] = onLocalServer
@@ -17,9 +22,12 @@ const STRATEGIES: ProxyBuilder[] = onLocalServer
   : [
       // 1. Direct — succeeds only when the host itself sends CORS headers.
       (u) => u,
-      // 2. codetabs currently sends `Access-Control-Allow-Origin: *` for
-      //    arbitrary files (rate-limited ~5 req/s); the rest are best-effort
-      //    backups that come and go.
+      // 2. Our Worker, if configured — reliable and not rate-limited.
+      ...(WORKER_PROXY
+        ? [(u: string) => `${WORKER_PROXY}/?url=${encodeURIComponent(u)}`]
+        : []),
+      // 3. Public proxies — best-effort backups that come and go. codetabs
+      //    currently sends `Access-Control-Allow-Origin: *` (rate-limited ~5/s).
       (u) => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(u)}`,
       (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
       (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,

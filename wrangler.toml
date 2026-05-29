@@ -1,0 +1,5 @@
+# Cloudflare Worker config for the PDF CORS proxy (see worker/proxy.js).
+# Deploy:  bunx wrangler login   then   bunx wrangler deploy
+name = "paper-reader-proxy"
+main = "worker/proxy.js"
+compatibility_date = "2025-05-01"
