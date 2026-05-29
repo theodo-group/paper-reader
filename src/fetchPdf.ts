@@ -13,7 +13,7 @@ const onLocalServer =
 // Our own Cloudflare Worker proxy (see worker/proxy.js + wrangler.toml). Once
 // deployed, set this to its URL — it becomes the reliable primary on the static
 // site. Leave empty to rely only on direct fetch + the public proxies.
-const WORKER_PROXY = ""; // e.g. "https://paper-reader-proxy.<subdomain>.workers.dev"
+const WORKER_PROXY = "https://paper-reader-proxy.paper-reader-proxy.workers.dev";
 
 type ProxyBuilder = (url: string) => string;
 
