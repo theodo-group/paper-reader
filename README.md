@@ -29,7 +29,20 @@ The default URL is the Deci/Olafsen/Ryan SDT paper — just press **Make readabl
     1- vs 2-column layouts to recover reading order;
   - groups lines into paragraphs/headings (de-hyphenating line breaks);
   - walks the page operator list while tracking the transform matrix to find and
-    rasterise each embedded figure to a PNG.
+    rasterise each embedded figure to a PNG;
+  - ignores full-page **scan backdrops** (a page-sized image sitting behind an
+    invisible text layer) so the real text reads through instead of coming back
+    as one giant image — while recovering the real **figures/tables** baked into
+    that scan by their captions ("FIG. 1", "TABLE 2") and cropping them as
+    images;
+  - suppresses **garbled OCR debris** that scanned diagrams paint over their
+    artwork (and crops full-page scanned **tables** as images instead of leaking
+    their cells as text), stitches sentences that **continue across a page
+    break** back into one paragraph, repairs **letter-spaced** OCR words
+    ("o f j o b" → "of job"), and avoids mistaking a large-font body paragraph
+    for a heading on size-jittery scans;
+  - falls back to **OCR** ([tesseract.js](https://github.com/naptha/tesseract.js),
+    in-browser) for pages that have no text layer at all.
 - **`src/App.tsx` / `src/Lightbox.tsx`** — re-typesets the result and provides a
   full-screen zoomable image viewer (click a figure, click again for actual
   size, `Esc` to close).
@@ -47,8 +60,12 @@ Pages.
 
 ## Notes / limits
 
-- Works on PDFs that have a real text layer (most digital papers). Pure scans
-  with no text layer would need OCR — not included here.
+- Works best on PDFs with a real text layer (most digital papers), including
+  scanned papers that carry an invisible OCR text layer behind a full-page image
+  (the backdrop is dropped and the text reads through).
+- Pages with no text layer at all are OCR'd in the browser with tesseract.js.
+  This is slow (a few seconds per page) and downloads the language model from a
+  CDN the first time; accuracy depends on scan quality.
 - Column detection is heuristic; unusual layouts may interleave oddly.
-- The pdf.js worker is loaded from jsDelivr at the exact installed version, so
+- The pdf.js worker (and the tesseract.js core/model) are loaded from a CDN, so
   the page needs internet access the first time.
