@@ -78,6 +78,27 @@ html, body {
 .fontsize button:disabled { opacity: 0.35; cursor: default; }
 .fontsize .small { font-size: 13px; }
 .fontsize .big { font-size: 18px; }
+
+/* ---- Bionic Reading toggle ---- */
+.bionic-toggle {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.bionic-toggle b { font-weight: 700; }
+.bionic-toggle:hover { background: #f3f4f6; }
+.bionic-toggle.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+/* The bolded fixation head; slightly heavier than surrounding text. */
+.bionic-fix { font-weight: 600; }
 .progress {
   max-width: 980px;
   margin: 0 auto;

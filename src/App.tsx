@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { reflowPdf, type ReflowPage } from "./pdf";
 import { fetchPdf } from "./fetchPdf";
+import { bionic } from "./bionic";
 import { Lightbox } from "./Lightbox";
 import { ReadingProgress } from "./ReadingProgress";
 
@@ -9,6 +10,7 @@ const DEFAULT_URL =
 
 const LAST_URL_KEY = "paper-reader:last-url";
 const FONT_SIZE_KEY = "paper-reader:font-size";
+const BIONIC_KEY = "paper-reader:bionic";
 
 // Reader font size in px. Generous default; clamp keeps the line measure sane.
 const DEFAULT_FONT = 21;
@@ -37,6 +39,26 @@ export function App() {
     }
     return DEFAULT_FONT;
   });
+  const [bionicOn, setBionicOn] = useState(() => {
+    try {
+      return localStorage.getItem(BIONIC_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  // Persist the Bionic Reading preference across visits.
+  const toggleBionic = useCallback(() => {
+    setBionicOn((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(BIONIC_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, []);
 
   // Persist the reader's chosen font size across visits.
   const changeFont = useCallback((delta: number) => {
@@ -60,8 +82,8 @@ export function App() {
       const buf = await fetchPdf(clean);
       setStatus({ state: "loading", done: 0, total: 0, phase: "Parsing pages…" });
       const result = await reflowPdf(buf, {
-        onProgress: (done, total) =>
-          setStatus({ state: "loading", done, total, phase: "Reflowing pages…" }),
+        onProgress: (done, total, phase) =>
+          setStatus({ state: "loading", done, total, phase: phase ?? "Reflowing pages…" }),
       });
       setPages(result);
       setLoadedUrl(clean);
@@ -164,6 +186,14 @@ export function App() {
               A
             </button>
           </div>
+          <button
+            className={`bionic-toggle${bionicOn ? " on" : ""}`}
+            onClick={toggleBionic}
+            aria-pressed={bionicOn}
+            title="Bionic Reading — bold the start of each word to guide the eye"
+          >
+            <b>Bio</b>nic
+          </button>
         </div>
         {status.state === "loading" && (
           <div className="progress">
@@ -199,7 +229,8 @@ export function App() {
                   </figure>
                 );
               }
-              return b.level === "h" ? <h2 key={key}>{b.text}</h2> : <p key={key}>{b.text}</p>;
+              const content = bionicOn ? bionic(b.text) : b.text;
+              return b.level === "h" ? <h2 key={key}>{content}</h2> : <p key={key}>{content}</p>;
             })
           )}
         </article>
