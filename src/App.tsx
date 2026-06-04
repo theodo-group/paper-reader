@@ -213,8 +213,13 @@ export function App() {
         {status.state === "error" && <p className="error">⚠ {status.message}</p>}
 
         <article className="doc" style={{ "--reader-font": `${fontSize}px` } as CSSProperties}>
-          {pages.flatMap((p) =>
-            p.blocks.map((b, i) => {
+          {pages.flatMap((p) => [
+            // Small tinted marker so the reader can map a passage back to the
+            // page it came from in the original PDF.
+            <div className="page-marker" key={`marker-${p.number}`} aria-label={`Page ${p.number}`}>
+              <span>p. {p.number}</span>
+            </div>,
+            ...p.blocks.map((b, i) => {
               const key = `${p.number}-${i}`;
               if (b.kind === "image") {
                 return (
@@ -231,8 +236,8 @@ export function App() {
               }
               const content = bionicOn ? bionic(b.text) : b.text;
               return b.level === "h" ? <h2 key={key}>{content}</h2> : <p key={key}>{content}</p>;
-            })
-          )}
+            }),
+          ])}
         </article>
       </main>
 
