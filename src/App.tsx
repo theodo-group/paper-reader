@@ -4,6 +4,7 @@ import { fetchPdf } from "./fetchPdf";
 import { bionic } from "./bionic";
 import { Lightbox } from "./Lightbox";
 import { ReadingProgress } from "./ReadingProgress";
+import { PageProgress } from "./PageProgress";
 
 const DEFAULT_URL =
   "https://selfdeterminationtheory.org/wp-content/uploads/2017/03/2017_DeciOlafsenRyan_annurev-orgpsych.pdf";
@@ -153,6 +154,7 @@ export function App() {
   return (
     <div className="app">
       <header className="bar">
+        <PageProgress total={pages.length} active={status.state === "done" && pages.length > 0} />
         <div className="bar-inner">
           <span className="logo">📄 Paper&nbsp;Reader</span>
           <input

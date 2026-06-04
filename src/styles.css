@@ -107,6 +107,59 @@ html, body {
   font-size: 13px;
 }
 
+/* ---- article page-progress bar (mobile only) ----
+   Sits flush with the top of the sticky header. The fill advances one step
+   per source-PDF page; faint ticks mark every 10% of the article. */
+.pageprogress { display: none; position: relative; }
+.pp-track {
+  position: relative;
+  height: 5px;
+  background: var(--line);
+  overflow: hidden;
+}
+.pp-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent);
+  /* Eased width change makes the per-page step read as a deliberate hop. */
+  transition: width 0.35s ease;
+}
+.pp-track i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: #ffffffcc;
+}
+/* Confetti burst anchored to the tip of the fill. */
+.pp-confetti {
+  position: absolute;
+  top: 4px;
+  width: 0;
+  pointer-events: none;
+}
+.pp-confetti span {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  opacity: 0;
+  animation: pp-pop 0.8s ease-out forwards;
+}
+@keyframes pp-pop {
+  0% { transform: translate(0, 0) scale(0.6) rotate(0deg); opacity: 1; }
+  60% { opacity: 1; }
+  100% {
+    /* Fan outwards/upwards, drift back down a touch, spin and fade. */
+    transform: translate(var(--x), calc(var(--y) + 14px)) scale(1) rotate(var(--r));
+    opacity: 0;
+  }
+}
+@media (max-width: 640px) {
+  .pageprogress { display: block; }
+}
+
 /* ---- mobile: wrap the top bar into two rows ----
    Row 1: logo + reader controls (font size, Bionic), row 2: URL + Go. */
 @media (max-width: 640px) {
