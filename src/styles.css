@@ -24,6 +24,9 @@ html, body {
   background: #ffffffee;
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
+  /* Keep the bar's content clear of the phone status bar / notch when the
+     page is drawn edge-to-edge (viewport-fit=cover). 0 on desktop. */
+  padding-top: env(safe-area-inset-top, 0px);
 }
 .bar-inner {
   display: flex;
@@ -141,18 +144,18 @@ html, body {
 }
 .pp-confetti span {
   position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
   opacity: 0;
-  animation: pp-pop 0.8s ease-out forwards;
+  animation: pp-pop 1s ease-out forwards;
 }
 @keyframes pp-pop {
   0% { transform: translate(0, 0) scale(0.6) rotate(0deg); opacity: 1; }
   60% { opacity: 1; }
   100% {
     /* Fan outwards/upwards, drift back down a touch, spin and fade. */
-    transform: translate(var(--x), calc(var(--y) + 14px)) scale(1) rotate(var(--r));
+    transform: translate(var(--x), calc(var(--y) + 22px)) scale(1.15) rotate(var(--r));
     opacity: 0;
   }
 }
@@ -295,7 +298,7 @@ html, body {
 }
 .close {
   position: fixed;
-  top: 16px;
+  top: calc(16px + env(safe-area-inset-top, 0px));
   right: 20px;
   font-size: 22px;
   line-height: 1;

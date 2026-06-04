@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /** Number of confetti pieces in a burst. */
-const PIECES = 14;
+const PIECES = 20;
 
 /**
  * Thin article-progress bar pinned to the top of the screen (mobile only —
@@ -67,7 +67,7 @@ export function PageProgress({ total, active }: { total: number; active: boolean
   // Remove the confetti from the DOM once its animation has played out.
   useEffect(() => {
     if (!burst) return;
-    const id = setTimeout(() => setBurst(0), 900);
+    const id = setTimeout(() => setBurst(0), 1200);
     return () => clearTimeout(id);
   }, [burst]);
 
@@ -94,7 +94,7 @@ export function PageProgress({ total, active }: { total: number; active: boolean
             // Deterministic upward fan: angle spreads across 180°, distance
             // and hue vary per piece — no randomness needed.
             const angle = (Math.PI * (i + 0.5)) / PIECES;
-            const dist = 26 + ((i * 37) % 26);
+            const dist = 46 + ((i * 37) % 44);
             const style = {
               "--x": `${Math.cos(angle) * dist}px`,
               "--y": `${-Math.sin(angle) * dist - 8}px`,
